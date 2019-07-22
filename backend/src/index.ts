@@ -4,7 +4,7 @@ import * as pg from 'pg';
 const app = express();
 const db = new pg.Client({database: 'wikiline'});
 
-app.get('/data/events/bounds', async (req, res) => {
+app.get('/data/events/bounds', async (_, res) => {
   try {
     const result = await db.query("SELECT MIN(EventDate.date), MAX(EventDate.date) FROM EventDate");
 
@@ -18,6 +18,32 @@ app.get('/data/events/bounds', async (req, res) => {
     })
   }
 });
+
+app.get('/data/events/by-id/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    let query = `
+      SELECT
+        Event.id, Event.image, EventDate.name, EventDate.date, EventDate.precision, Page.title, Page.description
+      FROM
+        Event
+      INNER JOIN
+        Page ON Event.page_id = Page.id
+      INNER JOIN
+        EventDate ON EventDate.event_id = Event.id
+      WHERE
+        Event.id = $1
+    `;
+    const result = await db.query(query, [id]);
+
+    res.json(result.rows[0]);
+  } catch (e) {
+    res.status(500).json({
+      error: e.toString()
+    })
+  }
+})
 
 app.get('/data/events/by-date/:date/:precision', async (req, res) => {
   try {
