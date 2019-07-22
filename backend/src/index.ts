@@ -118,7 +118,7 @@ app.get('/data', async (req, res) => {
 
     let query = `
       SELECT
-        EventDate.event_id, EventDate.name, EventDate.date, EventDate.precision, Page.title
+        Event.id, EventDate.name, EventDate.date, EventDate.precision, Page.title
       FROM
         Event
       INNER JOIN
