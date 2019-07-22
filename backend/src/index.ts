@@ -17,7 +17,7 @@ app.get('/data/events/bounds', async (req, res) => {
       error: e.toString()
     })
   }
-})
+});
 
 app.get('/data/events/by-date/:date/:precision', async (req, res) => {
   try {

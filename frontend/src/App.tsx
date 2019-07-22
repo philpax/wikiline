@@ -44,7 +44,9 @@ type CategoryData = {
   date: Moment | null;
   subcategories: CategoryData[];
   events: EventData[];
+
   open: boolean;
+  loading: boolean;
 };
 
 class Event extends React.Component<EventData> {
@@ -74,8 +76,9 @@ class Event extends React.Component<EventData> {
 type DateBounds = { min: Moment; max: Moment };
 type CategoryMetadata = {
   bounds: DateBounds;
-  addSubcategory: (indices: number[], data: CategoryData[]) => void;
-  setEvents: (indices: number[], events: EventData[]) => void;
+  addSubcategory: (index: number[], data: CategoryData[]) => void;
+  toggle: (index: number[]) => void;
+  setLoading: (index: number[], loading: boolean) => void;
 };
 
 class Category extends React.Component<CategoryData & CategoryMetadata> {
@@ -115,13 +118,21 @@ class Category extends React.Component<CategoryData & CategoryMetadata> {
         "-wide/Undated";
     }
 
+    if (this.props.loading) {
+      title += " (loading)";
+    }
+
+    if (!this.props.open) {
+      title += " ▼";
+    }
+
     return (
       <li className={this.props.type}>
         <span className="heading" onClick={this.onClick.bind(this)}>
           {title}
         </span>
 
-        <ul>
+        <ul className={this.props.open ? "open" : "closed"}>
           {this.props.events.map(e => (
             <Event {...e} key={e.id + e.title} />
           ))}
@@ -131,7 +142,8 @@ class Category extends React.Component<CategoryData & CategoryMetadata> {
               {...s}
               bounds={this.props.bounds}
               addSubcategory={this.props.addSubcategory}
-              setEvents={this.props.setEvents}
+              toggle={this.props.toggle}
+              setLoading={this.props.setLoading}
             />
           ))}
         </ul>
@@ -139,13 +151,13 @@ class Category extends React.Component<CategoryData & CategoryMetadata> {
     );
   }
 
-  async onClick() {
-    if (this.props.subcategories.length > 0) {
+  async loadChildData() {
+    const date = this.props.date;
+    if (date === null) {
       return;
     }
 
-    const date = this.props.date;
-    if (date === null) {
+    if (this.props.subcategories.length > 0 || this.props.events.length > 0) {
       return;
     }
 
@@ -170,15 +182,17 @@ class Category extends React.Component<CategoryData & CategoryMetadata> {
 
     const addToSubcategories = (
       date: Moment | null,
-      events: EventData[] = []
+      events: EventData[] = [],
+      open: boolean = false
     ) =>
       subcategories.push({
         index: this.props.index.concat(subcategories.length),
         type: nextCategoryType,
         date: date,
         subcategories: [],
-        events: events,
-        open: false
+        events,
+        open,
+        loading: false
       });
 
     const remapEvent = (a: any) => ({
@@ -195,7 +209,7 @@ class Category extends React.Component<CategoryData & CategoryMetadata> {
     const events = eventData.map(remapEvent);
 
     if (this.props.type !== "month") {
-      addToSubcategories(null, events);
+      addToSubcategories(null, events, true);
     }
 
     if (this.props.type === "era") {
@@ -233,11 +247,24 @@ class Category extends React.Component<CategoryData & CategoryMetadata> {
       );
 
       for (const [date, events] of monthEvents) {
-        addToSubcategories(date as Moment, (events as any[]).map(remapEvent));
+        addToSubcategories(
+          date as Moment,
+          (events as any[]).map(remapEvent),
+          true
+        );
       }
     }
 
     this.props.addSubcategory(this.props.index, subcategories);
+  }
+
+  async onClick() {
+    if (!this.props.loading) {
+      this.props.setLoading(this.props.index, true);
+      await this.loadChildData();
+      this.props.setLoading(this.props.index, false);
+    }
+    this.props.toggle(this.props.index);
   }
 }
 
@@ -245,7 +272,8 @@ const RootCategory = ({
   subcategories,
   bounds,
   addSubcategory,
-  setEvents
+  toggle,
+  setLoading
 }: CategoryData & CategoryMetadata) => (
   <ul>
     {subcategories.map(a => (
@@ -253,7 +281,8 @@ const RootCategory = ({
         key={a.index.toString()}
         bounds={bounds}
         addSubcategory={addSubcategory}
-        setEvents={setEvents}
+        toggle={toggle}
+        setLoading={setLoading}
         {...a}
       />
     ))}
@@ -286,7 +315,8 @@ class App extends React.Component {
         }
       ] as any[],
       events: [] as any[],
-      open: false
+      open: true,
+      loading: false
     }
   };
 
@@ -300,26 +330,32 @@ class App extends React.Component {
     });
   }
 
-  addSubcategory(index: number[], data: CategoryData[]) {
+  private getSubtree(index: number[]) {
     let root = { subcategories: [this.state.root] };
     let subtree = root as CategoryData;
     for (const component of index) {
       subtree = subtree.subcategories[component];
     }
 
-    subtree.subcategories = subtree.subcategories.concat(data);
-    this.setState({ root: root.subcategories[0] });
+    return { subtree, root: root.subcategories[0] };
   }
 
-  setEvents(index: number[], events: EventData[]) {
-    let root = { subcategories: [this.state.root] };
-    let subtree = root as CategoryData;
-    for (const component of index) {
-      subtree = subtree.subcategories[component];
-    }
+  addSubcategory(index: number[], data: CategoryData[]) {
+    const { subtree, root } = this.getSubtree(index);
+    subtree.subcategories = subtree.subcategories.concat(data);
+    this.setState({ root });
+  }
 
-    subtree.events = events;
-    this.setState({ root: root.subcategories[0] });
+  toggle(index: number[]) {
+    const { subtree, root } = this.getSubtree(index);
+    subtree.open = !subtree.open;
+    this.setState({ root });
+  }
+
+  setLoading(index: number[], loading: boolean) {
+    const { subtree, root } = this.getSubtree(index);
+    subtree.loading = loading;
+    this.setState({ root });
   }
 
   render() {
@@ -331,7 +367,8 @@ class App extends React.Component {
             {...this.state.root}
             bounds={this.state.bounds}
             addSubcategory={this.addSubcategory.bind(this)}
-            setEvents={this.setEvents.bind(this)}
+            toggle={this.toggle.bind(this)}
+            setLoading={this.setLoading.bind(this)}
           />
         ) : null}
       </div>
