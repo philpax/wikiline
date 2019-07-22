@@ -84,6 +84,7 @@ type CategoryMetadata = {
 class Category extends React.Component<CategoryData & CategoryMetadata> {
   render() {
     let title = "";
+
     if (this.props.date !== null) {
       const era = this.props.date.year() < 0 ? "BCE" : "CE";
 
@@ -122,9 +123,7 @@ class Category extends React.Component<CategoryData & CategoryMetadata> {
       title += " (loading)";
     }
 
-    if (!this.props.open) {
-      title += " ▼";
-    }
+    title = (this.props.open ? "▼  " : "▶  ") + title;
 
     return (
       <li className={this.props.type}>
