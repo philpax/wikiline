@@ -80,6 +80,8 @@ def month_name_to_number(name)
 end
 
 def parse_date(date, title, year)
+  orig_date = date.dup
+
   # the ruskies got us
   date.gsub!("Маrch", "March")
 
@@ -914,6 +916,12 @@ def parse_date(date, title, year)
       "precision2" => nil,
       "ongoing" => ongoing
     }
+  end
+
+  # Try replacing "and" with "-" and see if that gets us anywhere.
+  maybe_date = orig_date.gsub(/\band\b/, "-")
+  if maybe_date != orig_date
+    return process_date(maybe_date, title, year)
   end
 
   date
