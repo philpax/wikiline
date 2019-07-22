@@ -1,0 +1,130 @@
+body {
+  background-color: hsl(180, 20%, 10%);
+  color: #ccc;
+  font-family: 'Roboto', sans-serif;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.App h1 {
+  font-size: 40pt;
+  margin: 8px;
+  color: white;
+  background-color: hsl(200, 60%, 50%);
+  display: inline-block;
+  padding: 0px 8px;
+}
+
+.App ul {
+  padding-left: 8px;
+  padding-bottom: 8px;
+  margin: 0;
+}
+
+.App li {
+  list-style: none;
+  font-weight: bold;
+  margin: 4px 0px 4px 0px;
+}
+
+.App li span.heading {
+  color: white;
+  padding: 4px 16px;
+  width: 100%;
+  display: inline-block;
+}
+
+.App li span.heading span.loading {
+  float: right;
+  font-size: 16pt;
+  margin-right: 32px;
+}
+
+.era {
+  font-size: 40pt;
+  background-color: #e590b3;
+}
+.millennium {
+  font-size: 36pt;
+  background-color: #b983b4;
+}
+.century {
+  font-size: 32pt;
+  background-color: #8a78ac;
+}
+.decade {
+  font-size: 28pt;
+  background-color: #5a6d9b;
+}
+.year {
+  font-size: 24pt;
+  background-color: #2c5f81;
+}
+.month {
+  font-size: 20pt;
+  background-color: #004f63;
+}
+
+li .event {
+  font-weight: normal;
+  font-size: 16pt;
+  color: #fff;
+  margin: 0px 4px;
+}
+
+li .event span {
+  border-bottom: 1px solid white;
+  display: block;
+
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+    -khtml-user-select: none; /* Konqueror HTML */
+      -moz-user-select: none; /* Firefox */
+      -ms-user-select: none; /* Internet Explorer/Edge */
+          user-select: none; /* Non-prefixed version, currently
+                                supported by Chrome and Opera */
+}
+
+li .event span:hover {
+  background-color: hsl(30, 80%, 50%);
+  border-bottom: 1px solid hsl(30, 80%, 50%);
+}
+
+li .event em {
+  font-style: normal;
+  font-weight: bold;
+
+  background-color: #fff;
+  color: black;
+
+  min-width: 32px;
+  padding: 0px 4px;
+
+  text-align: center;
+
+  display: inline-block;
+}
+
+li .event div {
+  background-color: #fff;
+  display: table;
+  width: 100%;
+}
+
+li .event img {
+  display: table-cell;
+  vertical-align: middle;
+  height: auto;
+  padding: 12px;
+}
+
+li .event p {
+  display: table-cell;
+  vertical-align: middle;
+  color: black;
+  padding: 12px;
+
+  width: 50%;
+}
