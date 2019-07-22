@@ -135,8 +135,11 @@ app.get('/data/events/by-date/:date/:precision', async (req, res) => {
     const values = ([] as any[]).concat(...filters.map(a => a.value));
     // console.log(query, values);
     const result = await db.query(query, values);
+    const events = result.rows || [];
 
-    res.json(result.rows || []);
+    res.json({
+      events
+    });
   } catch (e) {
     res.status(500).json({
       error: e.toString()

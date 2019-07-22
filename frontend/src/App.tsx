@@ -164,7 +164,7 @@ class Category extends React.Component<CategoryData & CategoryMetadata> {
     const getData = async (precision: string, date: Moment) => {
       const data = (await fetch(
         `/data/events/by-date/${date.toISOString()}/${precision}`
-      ).then(a => a.json())) as any[] | { error: string };
+      ).then(a => a.json())) as { events: any[] } | { error: string };
 
       if ("error" in data) {
         throw new Error(data.error);
@@ -206,7 +206,7 @@ class Category extends React.Component<CategoryData & CategoryMetadata> {
           : undefined
     });
 
-    const events = eventData.map(remapEvent);
+    const events = eventData.events.map(remapEvent);
 
     if (this.props.type !== "month") {
       addToSubcategories(null, events, true);
@@ -239,17 +239,21 @@ class Category extends React.Component<CategoryData & CategoryMetadata> {
         addToSubcategories(date.clone().year(i));
       }
     } else if (this.props.type === "year") {
+      const tuple = <T extends any[]> (...data: T) => {
+        return data;
+      };
+
       const months = Array.from(Array(12), (_, i) => date.clone().month(i));
       const monthEvents = await Promise.all(
         months.map(date =>
-          getData("month", date).then(events => [date, events])
+          getData("month", date).then(data => tuple(date, data))
         )
       );
 
-      for (const [date, events] of monthEvents) {
+      for (const [date, data] of monthEvents) {
         addToSubcategories(
           date as Moment,
-          (events as any[]).map(remapEvent),
+          data.events.map(remapEvent),
           true
         );
       }
