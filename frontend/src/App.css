@@ -34,6 +34,14 @@ body {
   padding: 4px 16px;
   width: 100%;
   display: inline-block;
+
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+    -khtml-user-select: none; /* Konqueror HTML */
+      -moz-user-select: none; /* Firefox */
+      -ms-user-select: none; /* Internet Explorer/Edge */
+          user-select: none; /* Non-prefixed version, currently
+                                supported by Chrome and Opera */
 }
 
 .App li span.heading span.loading {
@@ -71,11 +79,10 @@ li .event {
   font-weight: normal;
   font-size: 16pt;
   color: #fff;
-  margin: 0px 4px;
+  margin: 4px 4px;
 }
 
 li .event span {
-  border-bottom: 1px solid white;
   display: block;
 
   -webkit-touch-callout: none; /* iOS Safari */
@@ -88,8 +95,7 @@ li .event span {
 }
 
 li .event span:hover {
-  background-color: hsl(30, 80%, 50%);
-  border-bottom: 1px solid hsl(30, 80%, 50%);
+  background-color: hsl(30, 82%, 40%);
 }
 
 li .event em {
