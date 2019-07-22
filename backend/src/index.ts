@@ -4,7 +4,7 @@ import * as pg from 'pg';
 const app = express();
 const db = new pg.Client({database: 'wikiline'});
 
-app.get('/bounds', async (req, res) => {
+app.get('/data/events/bounds', async (req, res) => {
   try {
     const result = await db.query("SELECT MIN(EventDate.date), MAX(EventDate.date) FROM EventDate");
 
@@ -19,9 +19,9 @@ app.get('/bounds', async (req, res) => {
   }
 })
 
-app.get('/data', async (req, res) => {
+app.get('/data/events/by-date/:date/:precision', async (req, res) => {
   try {
-    const { date, precision } = req.query;
+    const { date, precision } = req.params;
     let filters: { sql: string, value: any[] }[] = [];
 
     const jsDate = new Date(date);

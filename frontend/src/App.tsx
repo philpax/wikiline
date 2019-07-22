@@ -151,7 +151,7 @@ class Category extends React.Component<CategoryData & CategoryMetadata> {
 
     const getData = async (precision: string, date: Moment) => {
       const data = (await fetch(
-        `/data?precision=${precision}&date=${date.toISOString()}`
+        `/data/events/by-date/${date.toISOString()}/${precision}`
       ).then(a => a.json())) as any[] | { error: string };
 
       if ("error" in data) {
@@ -291,7 +291,7 @@ class App extends React.Component {
   };
 
   async componentDidMount() {
-    const bounds = await fetch("/bounds").then(a => a.json());
+    const bounds = await fetch("/data/events/bounds").then(a => a.json());
     this.setState({
       bounds: {
         min: moment.utc(bounds.min),
