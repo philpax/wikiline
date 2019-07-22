@@ -35,9 +35,12 @@ type EventData = {
   id: number;
   day?: string;
   title: string;
-  img?: string;
+  image?: string;
   description?: string;
+
+  open: boolean;
 };
+
 type CategoryData = {
   index: number[];
   type: CategoryType;
@@ -49,39 +52,91 @@ type CategoryData = {
   loading: boolean;
 };
 
-class Event extends React.Component<EventData> {
+type EventProperties = {
+  updateData: (newData: EventData) => void;
+  toggle: () => void;
+};
+
+type DateBounds = { min: Moment; max: Moment };
+type CategoryProperties = {
+  bounds: DateBounds;
+
+  addSubcategory: (index: number[], data: CategoryData[]) => void;
+  toggle: (index: number[]) => void;
+  setLoading: (index: number[], loading: boolean) => void;
+
+  updateEventData: (
+    categoryIndex: number[],
+    eventIndex: number,
+    data: EventData
+  ) => void;
+  toggleEvent: (categoryIndex: number[], eventIndex: number) => void;
+};
+
+function remapEvent(a: any): EventData {
+  return {
+    id: a.id,
+    day:
+      a.precision === "day"
+        ? moment(a.date)
+            .date()
+            .toString()
+        : undefined,
+    title: a.name ? `${a.name}, ${a.title}` : a.title,
+    image: a.image,
+    description: a.description,
+    open: false
+  };
+}
+
+class Event extends React.Component<EventData & EventProperties> {
   render() {
     return (
       <li className="event">
-        <span>
+        <span onClick={this.onClick.bind(this)}>
           <em>{this.props.day || "-"}</em>
           {" " + this.props.title}
         </span>
 
-        <div>
-          {this.props.img ? (
-            <img src={this.props.img} alt={this.props.title} />
+        <div className={this.props.open ? "open" : "closed"}>
+          {this.props.description ? (
+            <div
+              className="event-content"
+              dangerouslySetInnerHTML={{ __html: this.props.description }}
+            />
           ) : null}
-          {this.props.description ? <p>{this.props.description}</p> : null}
+          {this.props.image ? (
+            <img
+              className="event-image"
+              src={this.props.image}
+              alt={this.props.title}
+            />
+          ) : null}
         </div>
       </li>
     );
   }
 
-  async loadData() {
-    this.setState({ dataAvailable: true });
+  async onClick() {
+    if (this.props.description === undefined) {
+      const data = (await fetch(`/data/events/by-id/${this.props.id}`).then(a =>
+        a.json()
+      )) as any | { error: string };
+
+      if ("error" in data) {
+        throw new Error(data.error);
+      }
+
+      const p = this.props;
+      this.props.updateData(
+        Object.assign(remapEvent(data), { day: p.day, title: p.title })
+      );
+    }
+    this.props.toggle();
   }
 }
 
-type DateBounds = { min: Moment; max: Moment };
-type CategoryMetadata = {
-  bounds: DateBounds;
-  addSubcategory: (index: number[], data: CategoryData[]) => void;
-  toggle: (index: number[]) => void;
-  setLoading: (index: number[], loading: boolean) => void;
-};
-
-class Category extends React.Component<CategoryData & CategoryMetadata> {
+class Category extends React.Component<CategoryData & CategoryProperties> {
   render() {
     let title = "";
 
@@ -106,7 +161,7 @@ class Category extends React.Component<CategoryData & CategoryMetadata> {
           this.props.date.format("MMMM") +
           ` ${Math.abs(this.props.date.year())} ${era}`;
       } else {
-        title = "WTF";
+        title = "Unknown category type: " + this.props.type;
       }
     } else {
       const prevCategoryType = CategoryType[
@@ -132,8 +187,15 @@ class Category extends React.Component<CategoryData & CategoryMetadata> {
         </span>
 
         <ul className={this.props.open ? "open" : "closed"}>
-          {this.props.events.map(e => (
-            <Event {...e} key={e.id + e.title} />
+          {this.props.events.map((event, index) => (
+            <Event
+              {...event}
+              updateData={data =>
+                this.props.updateEventData(this.props.index, index, data)
+              }
+              toggle={() => this.props.toggleEvent(this.props.index, index)}
+              key={event.id + event.title}
+            />
           ))}
           {this.props.subcategories.map(s => (
             <Category
@@ -143,6 +205,8 @@ class Category extends React.Component<CategoryData & CategoryMetadata> {
               addSubcategory={this.props.addSubcategory}
               toggle={this.props.toggle}
               setLoading={this.props.setLoading}
+              updateEventData={this.props.updateEventData}
+              toggleEvent={this.props.toggleEvent}
             />
           ))}
         </ul>
@@ -194,17 +258,6 @@ class Category extends React.Component<CategoryData & CategoryMetadata> {
         loading: false
       });
 
-    const remapEvent = (a: any) => ({
-      id: a.id,
-      title: a.name ? `${a.name}, ${a.title}` : a.title,
-      day:
-        a.precision === "day"
-          ? moment(a.date)
-              .date()
-              .toString()
-          : undefined
-    });
-
     const events = eventData.events.map(remapEvent);
 
     if (this.props.type !== "month") {
@@ -238,7 +291,7 @@ class Category extends React.Component<CategoryData & CategoryMetadata> {
         addToSubcategories(date.clone().year(i));
       }
     } else if (this.props.type === "year") {
-      const tuple = <T extends any[]> (...data: T) => {
+      const tuple = <T extends any[]>(...data: T) => {
         return data;
       };
 
@@ -250,11 +303,7 @@ class Category extends React.Component<CategoryData & CategoryMetadata> {
       );
 
       for (const [date, data] of monthEvents) {
-        addToSubcategories(
-          date as Moment,
-          data.events.map(remapEvent),
-          true
-        );
+        addToSubcategories(date as Moment, data.events.map(remapEvent), true);
       }
     }
 
@@ -276,8 +325,10 @@ const RootCategory = ({
   bounds,
   addSubcategory,
   toggle,
-  setLoading
-}: CategoryData & CategoryMetadata) => (
+  setLoading,
+  updateEventData,
+  toggleEvent
+}: CategoryData & CategoryProperties) => (
   <ul>
     {subcategories.map(a => (
       <Category
@@ -286,6 +337,8 @@ const RootCategory = ({
         addSubcategory={addSubcategory}
         toggle={toggle}
         setLoading={setLoading}
+        updateEventData={updateEventData}
+        toggleEvent={toggleEvent}
         {...a}
       />
     ))}
@@ -361,6 +414,22 @@ class App extends React.Component {
     this.setState({ root });
   }
 
+  updateEventData(
+    categoryIndex: number[],
+    eventIndex: number,
+    data: EventData
+  ) {
+    const { subtree, root } = this.getSubtree(categoryIndex);
+    subtree.events[eventIndex] = data;
+    this.setState({ root });
+  }
+
+  toggleEvent(categoryIndex: number[], eventIndex: number) {
+    const { subtree, root } = this.getSubtree(categoryIndex);
+    subtree.events[eventIndex].open = !subtree.events[eventIndex].open;
+    this.setState({ root });
+  }
+
   render() {
     return (
       <div className="App">
@@ -372,6 +441,8 @@ class App extends React.Component {
             addSubcategory={this.addSubcategory.bind(this)}
             toggle={this.toggle.bind(this)}
             setLoading={this.setLoading.bind(this)}
+            updateEventData={this.updateEventData.bind(this)}
+            toggleEvent={this.toggleEvent.bind(this)}
           />
         ) : null}
       </div>

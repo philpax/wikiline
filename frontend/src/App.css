@@ -82,7 +82,7 @@ li .event {
   margin: 4px 4px;
 }
 
-li .event span {
+li .event > span {
   display: block;
 
   -webkit-touch-callout: none; /* iOS Safari */
@@ -94,7 +94,7 @@ li .event span {
                                 supported by Chrome and Opera */
 }
 
-li .event span:hover {
+li .event > span:hover {
   background-color: hsl(30, 82%, 40%);
 }
 
@@ -113,24 +113,22 @@ li .event em {
   display: inline-block;
 }
 
-li .event div {
+li .event > div {
   background-color: #fff;
-  display: table;
+  display: flex;
   width: 100%;
 }
 
-li .event img {
-  display: table-cell;
-  vertical-align: middle;
-  height: auto;
-  padding: 12px;
+.event-image {
+  width: 50%;
 }
 
-li .event p {
-  display: table-cell;
-  vertical-align: middle;
+.event-content {
   color: black;
   padding: 12px;
+  flex: 1;
+}
 
-  width: 50%;
+.event-content p {
+  margin: 0;
 }
