@@ -1,25 +1,27 @@
-import { default as express } from 'express';
-import * as pg from 'pg';
+import { default as express } from "express";
+import * as pg from "pg";
 
 const app = express();
-const db = new pg.Client({database: 'wikiline'});
+const db = new pg.Client({ database: "wikiline" });
 
-app.get('/data/events/bounds', async (_, res) => {
+app.get("/data/events/bounds", async (_, res) => {
   try {
-    const result = await db.query("SELECT MIN(EventDate.date), MAX(EventDate.date) FROM EventDate");
+    const result = await db.query(
+      "SELECT MIN(EventDate.date), MAX(EventDate.date) FROM EventDate"
+    );
 
     res.json({
       min: result.rows[0].min,
-      max: result.rows[0].max,
-    })
+      max: result.rows[0].max
+    });
   } catch (e) {
     res.status(500).json({
       error: e.toString()
-    })
+    });
   }
 });
 
-app.get('/data/events/by-id/:id', async (req, res) => {
+app.get("/data/events/by-id/:id", async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -41,20 +43,19 @@ app.get('/data/events/by-id/:id', async (req, res) => {
   } catch (e) {
     res.status(500).json({
       error: e.toString()
-    })
+    });
   }
-})
+});
 
-app.get('/data/events/by-date/:date/:precision', async (req, res) => {
+app.get("/data/events/by-date/:date/:precision", async (req, res) => {
   try {
     const { date, precision } = req.params;
-    let filters: { sql: string, value: any[] }[] = [];
+    let filters: { sql: string; value: any[] }[] = [];
 
     const jsDate = new Date(date);
 
     switch (precision) {
-      case "era":
-      {
+      case "era": {
         if (jsDate.getFullYear() < 0) {
           filters.push({
             sql: "EventDate.date < '0001-01-01'",
@@ -69,12 +70,11 @@ app.get('/data/events/by-date/:date/:precision', async (req, res) => {
 
         filters.push({
           sql: "EventDate.precision = 'era'",
-          value: [],
+          value: []
         });
         break;
       }
-      case "millennium":
-      {
+      case "millennium": {
         const millenniumYear = Math.floor(jsDate.getFullYear() / 1000) * 1000;
         filters.push({
           sql: "date_part('year', EventDate.date) = $1",
@@ -82,12 +82,11 @@ app.get('/data/events/by-date/:date/:precision', async (req, res) => {
         });
         filters.push({
           sql: "EventDate.precision = 'millennium'",
-          value: [],
+          value: []
         });
         break;
       }
-      case "century":
-      {
+      case "century": {
         const centuryYear = Math.floor(jsDate.getFullYear() / 100) * 100;
         filters.push({
           sql: "date_part('year', EventDate.date) = $1",
@@ -95,12 +94,11 @@ app.get('/data/events/by-date/:date/:precision', async (req, res) => {
         });
         filters.push({
           sql: "EventDate.precision = 'century'",
-          value: [],
+          value: []
         });
         break;
       }
-      case "decade":
-      {
+      case "decade": {
         const decadeYear = Math.floor(jsDate.getFullYear() / 10) * 10;
         filters.push({
           sql: "date_part('year', EventDate.date) = $1",
@@ -108,33 +106,35 @@ app.get('/data/events/by-date/:date/:precision', async (req, res) => {
         });
         filters.push({
           sql: "EventDate.precision = 'decade'",
-          value: [],
+          value: []
         });
         break;
       }
-      case "year":
-      {
+      case "year": {
         filters.push({
           sql: "date_part('year', EventDate.date) = $1",
           value: [jsDate.getFullYear()]
         });
         filters.push({
           sql: "EventDate.precision = 'year'",
-          value: [],
+          value: []
         });
         break;
       }
-      case "month":
-      {
+      case "month": {
         const startDate = new Date(jsDate.getFullYear(), jsDate.getMonth(), 1);
-        const endDate = new Date(jsDate.getFullYear(), jsDate.getMonth()+1, 0);
+        const endDate = new Date(
+          jsDate.getFullYear(),
+          jsDate.getMonth() + 1,
+          0
+        );
         filters.push({
           sql: "EventDate.date BETWEEN $1 AND $2",
           value: [startDate, endDate]
         });
         filters.push({
           sql: "(EventDate.precision = 'month' OR EventDate.precision = 'day')",
-          value: [],
+          value: []
         });
         break;
       }
@@ -157,7 +157,7 @@ app.get('/data/events/by-date/:date/:precision', async (req, res) => {
       query += "WHERE " + filters.map(a => a.sql).join(" AND ");
     }
 
-    query += "\nORDER BY EventDate.precision, EventDate.date"
+    query += "\nORDER BY EventDate.precision, EventDate.date";
     const values = ([] as any[]).concat(...filters.map(a => a.value));
     // console.log(query, values);
     const result = await db.query(query, values);
@@ -169,7 +169,7 @@ app.get('/data/events/by-date/:date/:precision', async (req, res) => {
   } catch (e) {
     res.status(500).json({
       error: e.toString()
-    })
+    });
   }
 });
 
