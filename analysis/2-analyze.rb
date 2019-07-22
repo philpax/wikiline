@@ -66,6 +66,7 @@ def segment(entry)
       description = "No description available." if description.nil?
     end
     description = description.split("\n")[0]
+    description = description[2..-1] if description.start_with? "}}"
   end
 
   infoboxes = [infobox]
