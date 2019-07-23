@@ -34,7 +34,10 @@ const PrevCategoryType = new Map<string, string>(
 type EventData = {
   id: number;
   day?: string;
+
+  name?: string;
   title: string;
+
   image?: string;
   description?: string;
 
@@ -227,7 +230,7 @@ class Category extends React.Component<CategoryData & CategoryProperties> {
       return;
     }
 
-    const getData = async (precision: string, date: Moment) => {
+    const getData = async (date: Moment, precision: CategoryType) => {
       const data = (await fetch(
         `/data/events/by-date/${date.toISOString()}/${precision}`
       ).then(a => a.json())) as { events: any[] } | { error: string };
@@ -239,7 +242,52 @@ class Category extends React.Component<CategoryData & CategoryProperties> {
       return data;
     };
 
-    const eventData = await getData(this.props.type, date);
+    const getEventCount = async (date1: Moment, precision: CategoryType) => {
+      let date2: Moment;
+      switch (precision) {
+        case CategoryType.Era:
+          if (date1.year() < 0) {
+            date1 = this.props.bounds.min.clone();
+            date2 = moment.utc({year: 0, month: 1, day: 1});
+          } else {
+            date1 = moment.utc({year: 0, month: 1, day: 1});
+            date2 = this.props.bounds.max.clone();
+          }
+          break;
+        case CategoryType.Millennium:
+          date2 = date1.clone().year(date1.year() + 1000);
+          break;
+        case CategoryType.Century:
+          date2 = date1.clone().year(date1.year() + 100);
+          break;
+        case CategoryType.Decade:
+          date2 = date1.clone().year(date1.year() + 10);
+          break;
+        case CategoryType.Year:
+          date2 = date1.clone().year(date1.year() + 1);
+          break;
+        case CategoryType.Month:
+          date2 = date1.clone().month(date1.month() + 1);
+          break;
+        case CategoryType.Day:
+          date2 = date1.clone().day(date1.day() + 1);
+          break;
+        default:
+          throw new Error("unsupported precision");
+      }
+
+      const data = (await fetch(
+        `/data/events/count/${date1.toISOString()}/${date2.toISOString()}`
+      ).then(a => a.json())) as { count: number } | { error: string };
+
+      if ("error" in data) {
+        throw new Error(data.error);
+      }
+
+      return data.count;
+    }
+
+    const eventData = await getData(date, this.props.type);
     let subcategories: CategoryData[] = [];
 
     const nextCategoryType = CategoryType[
@@ -263,9 +311,19 @@ class Category extends React.Component<CategoryData & CategoryProperties> {
 
     const events = eventData.events.map(remapEvent);
 
-    if (this.props.type !== "month") {
+    if (this.props.type !== "month" && events.length > 0) {
       addToSubcategories(null, events, true);
     }
+
+    const tuple = <T extends any[]>(...data: T) => {
+      return data;
+    };
+
+    const getValidDates = (dates: Moment[], type: CategoryType) => Promise.all(
+      dates.map(date =>
+        getEventCount(date, type).then(count => tuple(date, count))
+      )
+    ).then(ds => ds.filter(([_, c]) => c > 0).map(([d, _]) => d) );
 
     if (this.props.type === "era") {
       if (date.year() < 0) {
@@ -282,31 +340,38 @@ class Category extends React.Component<CategoryData & CategoryProperties> {
         }
       }
     } else if (this.props.type === "millennium") {
-      for (let i = date.year(); i < date.year() + 1000; i += 100) {
-        addToSubcategories(date.clone().year(i));
+      const dates = Array.from(Array(10), (_, i) => date.clone().year(date.year() + 100*i));
+      const validDates = await getValidDates(dates, CategoryType.Century);
+
+      for (const date of validDates) {
+        addToSubcategories(date);
       }
     } else if (this.props.type === "century") {
-      for (let i = date.year(); i < date.year() + 100; i += 10) {
-        addToSubcategories(date.clone().year(i));
+      const dates = Array.from(Array(10), (_, i) => date.clone().year(date.year() + 10*i));
+      const validDates = await getValidDates(dates, CategoryType.Decade);
+
+      for (const date of validDates) {
+        addToSubcategories(date);
       }
     } else if (this.props.type === "decade") {
-      for (let i = date.year(); i < date.year() + 10; i++) {
-        addToSubcategories(date.clone().year(i));
+      const dates = Array.from(Array(10), (_, i) => date.clone().year(date.year() + i));
+      const validDates = await getValidDates(dates, CategoryType.Year);
+
+      for (const date of validDates) {
+        addToSubcategories(date);
       }
     } else if (this.props.type === "year") {
-      const tuple = <T extends any[]>(...data: T) => {
-        return data;
-      };
-
-      const months = Array.from(Array(12), (_, i) => date.clone().month(i));
-      const monthEvents = await Promise.all(
-        months.map(date =>
-          getData("month", date).then(data => tuple(date, data))
+      const dates = Array.from(Array(12), (_, i) => date.clone().month(i));
+      const dateEvents = await Promise.all(
+        dates.map(date =>
+          getData(date, CategoryType.Month).then(data => tuple(date, data))
         )
       );
 
-      for (const [date, data] of monthEvents) {
-        addToSubcategories(date as Moment, data.events.map(remapEvent), true);
+      for (const [date, data] of dateEvents) {
+        if (data.events.length !== 0) {
+          addToSubcategories(date, data.events.map(remapEvent), true);
+        }
       }
     }
 

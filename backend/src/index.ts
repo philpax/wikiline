@@ -26,6 +26,25 @@ app.get("/data/events/bounds", async (_, res) => {
   }
 });
 
+app.get("/data/events/count/:date1/:date2", async (req, res) => {
+  try {
+    const { date1, date2 } = req.params;
+
+    const result = await db.query(
+      "SELECT COUNT(date) FROM EventDate WHERE date >= $1 AND date < $2",
+      [date1, date2]
+    );
+
+    res.json({
+      count: parseInt(result.rows[0].count)
+    });
+  } catch (e) {
+    res.status(500).json({
+      error: e.toString()
+    });
+  }
+});
+
 app.get("/data/events/by-id/:id", async (req, res) => {
   try {
     const { id } = req.params;
