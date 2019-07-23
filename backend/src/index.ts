@@ -99,7 +99,11 @@ app.get("/data/events/by-id/:id", async (req, res) => {
 
     if (event.image) {
       let image = event.image as string;
-      const matches = image.match(/\[\[File:(?<filename>.*?)\|.*?\]\]/i);
+      let matches = image.match(/\[\[File:(?<filename>.*?)\|.*?\]\]/i);
+      if (matches && matches.groups && matches.groups.filename) {
+        image = matches.groups.filename;
+      }
+      matches = image.match(/\[\[Image:(?<filename>.*?)\|.*?\]\]/i);
       if (matches && matches.groups && matches.groups.filename) {
         image = matches.groups.filename;
       }
