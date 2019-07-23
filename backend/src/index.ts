@@ -28,10 +28,15 @@ app.get("/data/events/bounds", async (_, res) => {
 
 app.get("/data/events/count/:date1/:date2", async (req, res) => {
   try {
-    const { date1, date2 } = req.params;
+    const date1 = new Date(req.params.date1);
+    const date2 = new Date(req.params.date2);
 
+    // If operating on BC dates, reverse the equality condition. This prevents
+    // 2500 BC dates being picked up under 2499 BC.
     const result = await db.query(
-      "SELECT COUNT(date) FROM EventDate WHERE date >= $1 AND date < $2",
+      date1.getFullYear() < 0 && date2.getFullYear() < 0
+        ? "SELECT COUNT(date) FROM EventDate WHERE date > $1 AND date <= $2"
+        : "SELECT COUNT(date) FROM EventDate WHERE date >= $1 AND date < $2",
       [date1, date2]
     );
 
@@ -111,7 +116,10 @@ app.get("/data/events/by-id/:id", async (req, res) => {
     event.description = unescape(doc.querySelector("section")!.innerHTML);
 
     const prefix = `
-    <p><b><a href="${url.resolve(baseUrl, event.title)}">Original article here</a></b></p>
+    <p><b><a href="${url.resolve(
+      baseUrl,
+      event.title
+    )}">Original article here</a></b></p>
     `;
 
     event.description = prefix + event.description;
