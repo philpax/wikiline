@@ -82,7 +82,8 @@ function remapEvent(a: any): EventData {
             .date()
             .toString()
         : undefined,
-    title: a.name ? `${a.name}, ${a.title}` : a.title,
+    name: a.name,
+    title: a.title,
     image: a.image,
     description: a.description,
     open: false
@@ -95,7 +96,9 @@ class Event extends React.Component<EventData & EventProperties> {
       <li className="event">
         <span onClick={this.onClick.bind(this)}>
           <em>{this.props.day || "-"}</em>
-          {" " + this.props.title}
+          {" "}
+          {this.props.name ? (<span><b>{this.props.name}</b>{", "}</span>) : ""}
+          {this.props.title}
         </span>
 
         <div className={this.props.open ? "open" : "closed"}>
