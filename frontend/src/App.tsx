@@ -98,7 +98,7 @@ class Event extends React.Component<EventData & EventProperties> {
     return (
       <li className="event">
         <span onClick={this.onClick.bind(this)}>
-          <em>{this.props.day || "-"}</em>
+          <span className="day-tag">{this.props.day || "-"}</span>
           {" "}
           {this.props.name ? (<span><b>{this.props.name}</b>{", "}</span>) : ""}
           {this.props.title}

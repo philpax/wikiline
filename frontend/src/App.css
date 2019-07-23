@@ -79,7 +79,8 @@ li .event {
   font-weight: normal;
   font-size: 16pt;
   color: #fff;
-  margin: 4px 4px;
+  margin: 0px 4px;
+  padding: 4px;
 }
 
 li .event > span {
@@ -98,15 +99,14 @@ li .event > span:hover {
   background-color: hsl(30, 82%, 40%);
 }
 
-li .event em {
-  font-style: normal;
+li .event span.day-tag {
   font-weight: bold;
 
-  background-color: #fff;
-  color: black;
+  border-right: 1px solid white;
 
   min-width: 32px;
   padding: 0px 4px;
+  margin-right: 4px;
 
   text-align: center;
 
