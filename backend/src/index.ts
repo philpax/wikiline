@@ -90,6 +90,13 @@ app.get("/data/events/by-id/:id", async (req, res) => {
       );
 
     event.description = unescape(doc.querySelector("section")!.innerHTML);
+
+    const prefix = `
+    <p><b><a href="${url.resolve(baseUrl, event.title)}">Original article here</a></b></p>
+    `;
+
+    event.description = prefix + event.description;
+
     if (event.image) {
       let image = event.image as string;
       const matches = image.match(/\[\[File:(?<filename>.*?)\|.*?\]\]/i);
