@@ -971,6 +971,8 @@ def process_page(page)
   page
 end
 
+return if DEBUG_PARSE
+
 puts "process: load"
 data = JSON.parse(File.read('data/semiprocessed-events.json'))
 puts "process: remove empty dates"
