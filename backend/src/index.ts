@@ -2,6 +2,7 @@ import { default as express } from "express";
 import * as pg from "pg";
 import { JSDOM } from "jsdom";
 import * as url from "url";
+import { default as moment } from "moment";
 
 const parsoid = require("parsoid");
 const unescape = require("unescape");
@@ -28,16 +29,16 @@ app.get("/data/events/bounds", async (_, res) => {
 
 app.get("/data/events/count/:date1/:date2", async (req, res) => {
   try {
-    const date1 = new Date(req.params.date1);
-    const date2 = new Date(req.params.date2);
+    const date1 = moment.utc(req.params.date1);
+    const date2 = moment.utc(req.params.date2);
 
     // If operating on BC dates, reverse the equality condition. This prevents
     // 2500 BC dates being picked up under 2499 BC.
     const result = await db.query(
-      date1.getFullYear() < 0 && date2.getFullYear() < 0
+      date1.year() < 0 && date2.year() < 0
         ? "SELECT COUNT(date) FROM EventDate WHERE date > $1 AND date <= $2"
         : "SELECT COUNT(date) FROM EventDate WHERE date >= $1 AND date < $2",
-      [date1, date2]
+      [date1.toDate(), date2.toDate()]
     );
 
     res.json({
@@ -151,11 +152,11 @@ app.get("/data/events/by-date/:date/:precision", async (req, res) => {
     const { date, precision } = req.params;
     let filters: { sql: string; value: any[] }[] = [];
 
-    const jsDate = new Date(date);
+    const jsDate = moment.utc(date);
 
     switch (precision) {
       case "era": {
-        if (jsDate.getFullYear() < 0) {
+        if (jsDate.year() < 0) {
           filters.push({
             sql: "EventDate.date < '0001-01-01'",
             value: []
@@ -174,7 +175,7 @@ app.get("/data/events/by-date/:date/:precision", async (req, res) => {
         break;
       }
       case "millennium": {
-        const millenniumYear = Math.floor(jsDate.getFullYear() / 1000) * 1000;
+        const millenniumYear = Math.floor(jsDate.year() / 1000) * 1000;
         filters.push({
           sql: "date_part('year', EventDate.date) = $1",
           value: [millenniumYear]
@@ -186,7 +187,7 @@ app.get("/data/events/by-date/:date/:precision", async (req, res) => {
         break;
       }
       case "century": {
-        const centuryYear = Math.floor(jsDate.getFullYear() / 100) * 100;
+        const centuryYear = Math.floor(jsDate.year() / 100) * 100;
         filters.push({
           sql: "date_part('year', EventDate.date) = $1",
           value: [centuryYear]
@@ -198,7 +199,7 @@ app.get("/data/events/by-date/:date/:precision", async (req, res) => {
         break;
       }
       case "decade": {
-        const decadeYear = Math.floor(jsDate.getFullYear() / 10) * 10;
+        const decadeYear = Math.floor(jsDate.year() / 10) * 10;
         filters.push({
           sql: "date_part('year', EventDate.date) = $1",
           value: [decadeYear]
@@ -212,7 +213,7 @@ app.get("/data/events/by-date/:date/:precision", async (req, res) => {
       case "year": {
         filters.push({
           sql: "date_part('year', EventDate.date) = $1",
-          value: [jsDate.getFullYear()]
+          value: [jsDate.year()]
         });
         filters.push({
           sql: "EventDate.precision = 'year'",
@@ -221,15 +222,11 @@ app.get("/data/events/by-date/:date/:precision", async (req, res) => {
         break;
       }
       case "month": {
-        const startDate = new Date(jsDate.getFullYear(), jsDate.getMonth(), 1);
-        const endDate = new Date(
-          jsDate.getFullYear(),
-          jsDate.getMonth() + 1,
-          0
-        );
+        const startDate = jsDate.clone().day(1);
+        const endDate = startDate.clone().month(startDate.month()+1);
         filters.push({
           sql: "EventDate.date BETWEEN $1 AND $2",
-          value: [startDate, endDate]
+          value: [startDate.toDate(), endDate.toDate()]
         });
         filters.push({
           sql: "(EventDate.precision = 'month' OR EventDate.precision = 'day')",
