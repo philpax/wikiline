@@ -10,4 +10,5 @@ INFOBOXES = [
   "oil spill",
   "public transit accident",
   "sports competition event",
+  "terrorist attack"
 ]

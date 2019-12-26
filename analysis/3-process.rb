@@ -1,3 +1,4 @@
+# coding: utf-8
 require 'json'
 require 'date'
 require 'parallel'
@@ -19,6 +20,7 @@ def parse_age_ymwd(tag, ongoing)
     rescue Exception => e
       STDERR.puts "Died on date1: #{components[0][0]}"
       STDERR.puts "Died on date2: #{components[1][0]}"
+      STDERR.puts "Died on: #{tag}"
       raise
     end
 
@@ -947,7 +949,26 @@ def fixup_date(date)
 end
 
 def process_date(date, title = nil, year = nil)
-  fixup_date(parse_date(date, title, year))
+  begin
+    fixup_date(parse_date(date, title, year))
+  rescue => e
+    STDERR.puts("process_date: died on '#{date}' from '#{title}'")
+    raise
+  end
+end
+
+# Some jokers like to fuck up Wikipedia dates. This checks for validity
+# so that they're filtered out.
+def validate_date_structure(date)
+  if !date['year1'].nil? && !date['month1'].nil? && !date['day1'].nil?
+    return false unless Date.valid_date?(date['year1'], date['month1'], date['day1'])
+  end
+
+  if !date['year2'].nil? && !date['month2'].nil? && !date['day2'].nil?
+    return false unless Date.valid_date?(date['year2'], date['month2'], date['day2'])
+  end
+
+  true
 end
 
 def process_event(event, title)
@@ -957,7 +978,9 @@ def process_event(event, title)
   # This is a crappy heuristic, but...
   title = event["title"] if event["title"] != nil && !title.match?(/\d{4}/) && event["title"].match?(/\d{4}/)
   event["old_date"] = event["date"].dup
-  event["date"] = process_date(date, title, event["year"] != nil ? event["year"].to_i : nil)
+
+  new_date = process_date(date, title, event["year"] != nil ? event["year"].to_i : nil)
+  event["date"] = new_date if validate_date_structure(new_date)
 
   event
 end
@@ -971,23 +994,23 @@ def process_page(page)
   page
 end
 
-return if DEBUG_PARSE
+return unless $0 == __FILE__
 
 puts "process: load"
 data = JSON.parse(File.read('data/semiprocessed-events.json'))
-puts "process: remove empty dates"
+puts "process: remove empty dates from #{data.length} events"
 data.each { |p|
   p["events"].delete_if {
     |e| e["date"].nil? || e["date"].empty?
   }
 }
-puts "process: remove pages with no events"
+puts "process: remove pages with no events from #{data.length} events"
 data.delete_if { |p| p["events"].empty? }
 
-puts "process: process pages"
+puts "process: process pages from #{data.length} events"
 pages = Parallel.map(data) { |e| process_page(e) }
 
-puts "process: gathering statistics"
+puts "process: gathering statistics from #{pages.length} pages"
 events_count = pages.map { |p| p["events"].length }.sum
 parsed_count = pages.map { |p| p["events"].map { |e| e["date"].class == Hash ? 1 : 0 }.sum }.sum
 puts "process: parsed date count - #{parsed_count}/#{events_count} (#{(parsed_count.to_f * 100/events_count).round(2)}%)"
@@ -1007,9 +1030,9 @@ pages.each { |p|
   p["events"].delete_if { |e| e["date"].class != Hash }
 }
 
-puts "process: remove pages with no events after processing"
+puts "process: remove pages with no events after processing from #{pages.length} pages"
 pages = pages.filter { |p| !p["events"].empty? }
 
-puts "process: write"
+puts "process: write #{pages.length} pages"
 File.write('data/processed-events.json', JSON.generate(pages))
 puts "process: done"

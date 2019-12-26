@@ -1,8 +1,9 @@
 require 'nokogiri'
 require 'json'
-require './common/supported_infoboxes'
 
 FILENAME = 'data/raw-events.json'
+INFOBOXES = IO.readlines('common/supported-infoboxes.txt', chomp: true)
+BLACKLISTED_PREFIXES = IO.readlines('common/blacklisted-prefixes.txt', chomp: true)
 
 class Parser < Nokogiri::XML::SAX::Document
   def start_element(name, attrs = [])
@@ -29,6 +30,10 @@ class Parser < Nokogiri::XML::SAX::Document
 
     if name == "page"
       dtext = @text.downcase
+      BLACKLISTED_PREFIXES.each { |prefix|
+        return if @title.start_with? prefix
+      }
+
       INFOBOXES.each { |ib|
         next unless dtext.include? "{{infobox #{ib}"
 
@@ -40,7 +45,7 @@ class Parser < Nokogiri::XML::SAX::Document
           text: @text
         })
 
-        if @count % [(@count/4), 1].max == 0
+        if @count % 500 == 0
           File.write(FILENAME, JSON.generate(@events))
           puts "dump: partial write at #{@count}"
         end
@@ -52,5 +57,5 @@ class Parser < Nokogiri::XML::SAX::Document
 end
 
 puts "dump: start"
-Nokogiri::XML::SAX::Parser.new(Parser.new).parse(File.open('data/enwiki-latest-pages-articles-multistream.xml'))
+Nokogiri::XML::SAX::Parser.new(Parser.new).parse(ARGF)
 puts "dump: end"

@@ -39,8 +39,8 @@ end
 def segment(entry)
   # Extract the infobox from the text.
   text = entry["text"]
-  # TODO: Deal with multiple infoboxes
   start_index = text.index(/\{\{[Ii]nfobox/)
+  print text if start_index.nil?
   length = find_template_bounds(text, start_index)
 
   # Extract the infobox.
@@ -66,7 +66,11 @@ def segment(entry)
       description = "No description available." if description.nil?
     end
     description = description.split("\n")[0]
-    description = description[2..-1] if description.start_with? "}}"
+    if description.nil?
+      puts "warn: missing description for page '#{entry['title']}'"
+    else
+      description = description[2..-1] if description.start_with? "}}"
+    end
   end
 
   infoboxes = [infobox]
@@ -151,13 +155,15 @@ def extract(entry)
   }
 end
 
+return unless $0 == __FILE__
+
 # Skip these...
 SKIP = ["Wikipedia:", "Draft:", "Dominion War", "Command & Conquer", "Template:"]
 SKIP_CATEGORIES = ["[[Category:Fictional battles]]"]
 
 puts "analyze: load"
 data = JSON.parse(File.read('data/raw-events.json'))
-puts "analyze: filter"
+puts "analyze: filtering #{data.length} events"
 filtered_data = data.filter { |e|
   !SKIP.any? { |s|
     e["title"].start_with? s
@@ -166,9 +172,9 @@ filtered_data = data.filter { |e|
   }
 }
 
-puts "analyze: extract-segment"
+puts "analyze: extract-segmenting #{filtered_data.length} events"
 events = Parallel.map(filtered_data) { |e| extract(segment(e)) }
 
-puts "analyze: write"
+puts "analyze: write #{events.length} events"
 File.write('data/semiprocessed-events.json', JSON.generate(events))
 puts "analyze: done"
