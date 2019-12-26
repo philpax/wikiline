@@ -27,6 +27,11 @@ app.get("/data/events/bounds", async (_, res) => {
   }
 });
 
+const sqlBetweenDates = (dateString: string, date1: moment.Moment, date2: moment.Moment) =>
+  date1.year() < 0 && date2.year() < 0
+  ? `${dateString} > $1 AND ${dateString} <= $2`
+  : `${dateString} >= $1 AND ${dateString} < $2`;
+
 app.get("/data/events/count/:date1/:date2", async (req, res) => {
   try {
     const date1 = moment.utc(req.params.date1);
@@ -35,9 +40,7 @@ app.get("/data/events/count/:date1/:date2", async (req, res) => {
     // If operating on BC dates, reverse the equality condition. This prevents
     // 2500 BC dates being picked up under 2499 BC.
     const result = await db.query(
-      date1.year() < 0 && date2.year() < 0
-        ? "SELECT COUNT(date) FROM EventDate WHERE date > $1 AND date <= $2"
-        : "SELECT COUNT(date) FROM EventDate WHERE date >= $1 AND date < $2",
+      "SELECT COUNT(date) FROM EventDate WHERE " + sqlBetweenDates('date', date1, date2),
       [date1.toDate(), date2.toDate()]
     );
 
@@ -222,10 +225,10 @@ app.get("/data/events/by-date/:date/:precision", async (req, res) => {
         break;
       }
       case "month": {
-        const startDate = jsDate.clone().day(1);
+        const startDate = jsDate.clone().date(1);
         const endDate = startDate.clone().month(startDate.month()+1);
         filters.push({
-          sql: "EventDate.date BETWEEN $1 AND $2",
+          sql:   sqlBetweenDates('EventDate.date', startDate, endDate),
           value: [startDate.toDate(), endDate.toDate()]
         });
         filters.push({
