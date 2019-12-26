@@ -1,0 +1,129 @@
+{{Infobox military conflict
+|conflict=American Revolutionary War
+|image=AmericanRevolutionaryWarMon.jpg
+|image_size=300px
+|caption='''Clockwise''': [[Surrender of Lord Cornwallis]] after the [[Siege of Yorktown]], [[Battle of Trenton]], [[The Death of General Warren at the Battle of Bunker's Hill, June 17, 1775|The Death of General Warren]] at the [[Battle of Bunker Hill]], [[Battle of Long Island]], [[Battle of Guilford Court House]]
+|date=April 19, 1775{{snds}}September 3, 1783 <br />{{small|({{Age in years, months and days|1775|04|19|1783|09|03}})}}<br />'''Ratification effective:''' May 12, 1784<br />{{small|({{Age in years, months and days|1775|04|19|1784|05|12}})}}
+|place= Eastern North America, [[Caribbean Sea]], [[Indian subcontinent]], [[Africa]], the [[Atlantic Ocean]], and the [[Indian Ocean]]
+
+|result= <!--DO NOT ALTER WITHOUT CONSENSUS-->
+{{Collapsible list|title='''American-Allied victory:'''|titlestyle=font-weight:normal;background:transparent;text-align:left;|
+* [[Peace of Paris (1783)|Peace of Paris]]
+* British recognition of American independence
+* End of the First British Empire<ref>Brendan Simms, ''Three Victories and a Defeat: The Rise and Fall of the First British Empire, 1714–1783'' (2008)</ref>
+* British retention of Canada and Gibraltar
+* Spanish conquest of [[British West Florida]]
+}}
+|territory=
+* Great Britain cedes to the United States the area east of the [[Mississippi River]] and south of the [[Great Lakes]] and [[St. Lawrence River]]
+* Great Britain cedes [[East Florida]], [[West Florida]], and [[Menorca]] to Spain
+* Great Britain cedes [[Tobago]] and [[Senegal]] to France
+* [[Dutch Republic]] cedes [[Nagapattinam|Negapatnam]] to Great Britain
+
+|combatant1= <!--DO NOT CHANGE WITHOUT CONSENSUS-->
+{{flagdeco|United States|1776}} '''[[Thirteen Colonies]]'''<br />{{small|(before 1776)}}<br />{{flagdeco|United States|1777}} '''[[Patriot (American Revolution)|United States]]'''<br />{{small|(after 1776)}}<br />{{flagicon image|Flag of the Vermont Republic.svg}} [[Vermont Republic]]{{refn|(from 1777)}}<br />{{flagicon|Kingdom of France}} [[Kingdom of France|France]]{{refn|[[Anglo-French War (1778–83)|(from 1778)]]}}{{refn|The term "French Empire" colloquially refers to the [[First French Empire|empire under Napoleon]], but it is used here for brevity to refer to France proper and to the colonial empire that the [[Kingdom of France]] ruled}}<br />{{flagicon|Spain|1748}} [[Enlightenment in Spain|Spain]]{{refn|[[Spain in the American Revolutionary War|(from 1779)]]}}<hr>''Co-belligerents:''<br>{{flagicon|Dutch Republic}} [[Dutch Republic]]{{refn|[[Fourth Anglo-Dutch War|(1780–84)]]}}<br />{{Flagicon image|Flag of Mysore.svg}} [[Kingdom of Mysore|Mysore]]{{refn|([[Second Anglo-Mysore War|1780–84]])}}<hr>{{Collapsible list
+  |titlestyle=background:transparent;text-align:left;font-weight:normal;font-size:100%;
+  |framestyle=border:none; padding:0; <!--Hides borders and improves row spacing-->
+  |title=[[Native Americans in the United States|American Indians]]:
+  |1= [[Oneida tribe|Oneida]]<br />[[Tuscarora (tribe)|Tuscarora]]<br />[[Catawba (tribe)|Catawba]]<br />[[Lenape]]<br />[[Chickasaw]]<br />[[Choctaw]]<br />[[Mahican]]<br />[[Mi'kmaq]]{{refn|(until 1779)}}<br />[[Abenaki]]<br />[[Cheraw (tribe)|Cheraw]]<br />[[Seminole]]<br />[[Pee Dee people|Pee Dee]]<br />[[Lumbee]]<br />[[Watauga Association]]
+}}
+|combatant2= <!--DO NOT CHANGE WITHOUT CONSENSUS-->
+{{flagicon|Kingdom of Great Britain}} '''[[Kingdom of Great Britain|Great Britain]]'''
+*{{flagicon|Kingdom of Great Britain}} '''[[Province of Quebec (1763–1791)|Quebec]]'''
+*{{flagicon|Kingdom of Great Britain}} '''[[Loyalists (American Revolution)|Loyalists]]'''
+{{flagicon image|Flag of Hanover (1692).svg}} [[Electorate of Hanover|Hanover]]{{refn|Hanover supplied troops per [[Personal union]] treaty, not as mercenaries}}<ref>Lowell, Edward J (1884), "The Hessians and the other German Auxiliaries of Great Britain in the Revolutionary War", Harper and Brothers Publishers, New York, Chapter II. Quote: "Five battalions of the Hanoverian subjects of George III were despatched to Gibraltar and Menorca"</ref> <!--Agreed by consensus, do not revert--><hr>[[Germans in the American Revolution#Allies of Great Britain|Germans]]:<!--Consensus agrees mercenaries is unnecessary; see Talk--><br />[[File:Wappen-HK (1736-1804).svg|17px]] [[Landgraviate of Hesse-Kassel|Hesse-Kassel]]<br />[[File:Wappen-HK (1736-1804).svg|17px]] [[Hesse-Hanau]]<br />[[File:Coat of Arms of the Principality of Waldeck and Pyrmont.svg|19px]] [[Waldeck (state)|Waldeck]]<!--black, yellow and red colors not officially used by the military until 1814: see http://www.fotw.net/flags/de-wp_hi.html--><br />[[File:Coat of Arms of Brunswick-Lüneburg.svg|19px]] [[Brunswick-Wolfenbüttel|Brunswick]]<br />[[File:Wappen Brandenburg-Ansbach.svg|19px|link=]] [[Ansbach-Bayreuth|Ansbach]]<br />[[File:Blason Principaut%C3%A9 d%27Anhalt-Zerbst (XVIIIe si%C3%A8cle).svg|19px|link=]] [[Principality of Anhalt-Zerbst|Anhalt-Zerbst]]<hr>{{Collapsible list
+  |titlestyle=background:transparent;text-align:left;font-weight:normal;font-size:100%;
+  |framestyle=border:none; padding:0; <!--Hides borders and improves row spacing-->
+  |title=[[Native Americans in the United States|American Indians]]:
+  |1= [[Onondaga people|Onondaga]]<br />[[Mohawk nation|Mohawk]]<br />[[Cayuga people|Cayuga]]<br />[[Seneca people|Seneca]]<br />[[Mi'kmaq]]{{refn|(from 1779)}}<br />[[Cherokee]]<br />[[Odawa]]<br />[[Muscogee]]<br />[[Susquehannock]]<br />[[Shawnee]]
+}}
+|commander1=<!--MAJOR LEADERS ONLY. DO NOT ADD/REMOVE WITHOUT CONSENSUS-->
+{{flagdeco|United States|1777}} [[George Washington]]<br />{{flagicon image|Flag of the Vermont Republic.svg}} [[Thomas Chittenden]]<br />{{flagicon|Kingdom of France}} [[Louis XVI of France|Louis XVI]]<br />{{flagicon|Spain|1748}} [[Charles III of Spain|Charles III]]<hr>{{flagicon|Dutch Republic}} [[William V, Prince of Orange|William V]]<br />{{flagicon|Kingdom of Mysore}} [[Hyder Ali]] [[Death by natural causes|†]]<br />{{flagicon|Kingdom of Mysore}} [[Tipu Sultan]]<br>[[List of military leaders in the American Revolutionary War|''full list...'']]
+|commander2=<!--MAJOR LEADERS ONLY. DO NOT ADD/REMOVE WITHOUT CONSENSUS-->
+{{flagicon|Kingdom of Great Britain}}{{flagicon image|Flag of Hanover (1692).svg}} [[George III of the United Kingdom|George III]]<br />{{flagicon|Kingdom of Great Britain}} [[Frederick North, Lord North|Lord North]]<br />{{nowrap|{{flagicon|Kingdom of Great Britain}} [[George Germain, 1st Viscount Sackville|Lord George Germain]]}}<br>[[List of military leaders in the American Revolutionary War|''full list...'']]
+|strength1=
+'''United States:'''<br />
+<small>'''[[Continental Army|Army]] & [[Militia (United States)|Militia]]:'''<br />
+40,000 (average)<ref name=medical>Duncan, Louis C. [http://history.amedd.army.mil/booksdocs/rev/MedMen/default.html Medical Men in the American Revolution] (1931).</ref><br />
+200,000 (total served)<ref name="Michael Lanning 2009 195–96">{{cite book|author=Michael Lanning|title=American Revolution 100: The Battles, People, and Events of the American War for Independence, Ranked by Their Significance|url=https://books.google.com/books?id=1GEs53wMr7EC&pg=PA193|year=2009|publisher=Sourcebooks|pages=195–96|isbn=978-1-4022-4170-3}}</ref><br />
+'''[[Continental Navy|Navy]]:'''<br />
+5,000 sailors (peak 1779)<ref name="Greene" /><br />
+53 [[Frigate#Age of Sail|frigates]] and [[Sloop-of-war|sloops]] (total served)<ref name="Greene">Jack P. Greene and J. R. Pole. ''A Companion to the American Revolution'' (Wiley-Blackwell, 2003), p. 328.</ref><br />
+'''[[List of United States state navies in the American Revolutionary War|State Navies]]:'''<br />
+106 ships (total served)<ref>{{cite book|title=The navy of the American Revolution: its administration, its policy and its achievements|first=Charles Oscar|last=Paullin|publisher=The Burrows Brothers Co|year=1906|url=https://books.google.com/?id=Ws5EAAAAIAAJ&dq=inauthor%3Apaullin%20massachusetts%20navy&pg=PA315#v=onepage&q=inauthor:paullin%20massachusetts%20navy|ref=Paullin}}</ref><br />
+'''[[Privateer#United States|Privateers]]:'''<br />
+55,000 sailors (total served)<ref>{{cite web|url=http://www.usmm.org/revolution.html |title=Privateers or Merchant Mariners help win the Revolutionary War |publisher=Usmm.org |date= |accessdate=May 25, 2017}}</ref><br />
+1,697 ships<ref>Howarth 1991, p. 16</ref></small>
+
+'''Allies:'''<br />
+<small>'''Army:'''<br />
+63,000 French and Spanish (Gibraltar)<ref>{{Citation | last = Montero | first = Francisco Maria | title = Historia de Gibraltar y de su campo | publisher = Imprenta de la Revista Médica | year = 1860 | language = Spanish | page = 356}}</ref>{{Sfn | Chartrand | Courcelle | 2006 | p = 79}}<br />
+'''Navy:'''<br />
+146 [[Ship of the line|ships-of-the-line]] (1782)<ref name="Jonathan Dull 1985 p. 110">Jonathan Dull, ''A Diplomatic History of the American Revolution'' (Yale University Press, 1985), p. 110.</ref></small>
+
+'''American Indian Allies:''' <br />
+<small>Unknown</small>
+
+|strength2=
+'''Great Britain:'''<br />
+<small>'''[[British Army during the American Revolutionary War|Army]]:'''<br />
+48,000 (America peak)<ref name="totallyhistory.com">{{cite web|url=http://totallyhistory.com/red-coats/|title=Red Coats Facts – British Soldiers in the American Revolution|website=totallyhistory.com|date=April 2012}}</ref><br />
+121,000 (global 1781)<ref name="British Army 1775–1783">{{cite web |url=http://orbat.com/site/uk_orbats/files/6/The%20British%20Army%201775.pdf |title=The British Army 1775–1783 |publisher=orbat |accessdate=2013-09-23 |url-status=dead |archiveurl=https://web.archive.org/web/20130927073929/http://orbat.com/site/uk_orbats/files/6/The%20British%20Army%201775.pdf |archivedate=September 27, 2013 |df=mdy-all }}</ref><br />
+7,500 (Gibraltar){{Sfn | Chartrand | Courcelle | 2006 | p = 63 | ps =: "Of 7,500 men in the Gibraltar garrison in September (including 400 in hospital), some 3,430 were always on duty"}}<br />
+'''[[Royal Navy#1707–1815|Navy]]:'''<br />
+94 [[Ship of the line|ships-of-the-line]] (1782)<ref name="Jonathan Dull 1985 p. 110" /><br />
+104 [[Frigate#Age of Sail|frigates]] (1781)<ref>Winfield, Rif, ''[[British Warships in the Age of Sail]]: 1714–1792'' (Seaforth Publishing, 2007) {{ISBN|9781844157006}}</ref><br />
+37 [[Sloop-of-war|sloops]] (1781)<ref>Winfield, Rif, ''[[British Warships in the Age of Sail]] 1714–1792: Design, Construction, Careers and Fates'' (Seaforth Publishing, 2007)</ref><br />
+171,000 sailors<ref name="Mackesy 1964 pp. 6, 176">Mackesy (1964), pp. 6, 176 (British seamen).</ref></small>
+
+'''[[Loyalist (American Revolution)|Loyalists]]:'''<br />
+<small>25,000 (total served)<ref name="Savas and Dameron 2006, p. xli">Savas and Dameron (2006), p. xli</ref></small>
+
+'''[[Electorate of Brunswick-Lüneburg|Hanoverians]]:'''<br />
+<small>2,365 (total served)<ref>Knesebeck, Ernst von dem (1845), "Geschichte de churhannoverschen Truppen in Gibraltar, Menorca und Ostindien", Published by Im Verlage der Helwingschen Hof-Buchhandlung. Note: The strength of a Hanoverian battalion is listed as 473 men</ref></small>
+
+'''[[Germans in the American Revolution#Allies of Great Britain|Germans]]:'''<br />
+<small>29,875 (total served)<ref name="Lowell, Edward J 1884">Lowell, Edward J (1884), "The Hessians and the other German Auxiliaries of Great Britain in the Revolutionary War", Harper and Brothers Publishers, New York, Chapter II</ref></small>
+
+'''American Indian Allies:'''<br />
+<small>13,000<ref>Greene and Pole (1999), p. 393; Boatner (1974), p. 545.</ref></small>
+
+|casualties1= '''United States:'''<br />
+<small>25,000–70,000 total dead<ref name=medical /><ref name="Howard H. Peckham 1974">Howard H. Peckham, ed., The Toll of Independence: Engagements and Battle Casualties of the American Revolution (Chicago: University of Chicago Press, 1974).</ref><br />
+6,800 killed in battle<br />
+17,000 died of disease<ref name="Burrows">{{cite journal|last=Burrows |first=Edwin G. |author-link=Edwin G. Burrows |title=Patriots or Terrorists |url=http://www.americanheritage.com/content/patriots-or-terrorists |journal=American Heritage |accessdate=November 29, 2014 |archiveurl=https://web.archive.org/web/20130323233806/http://www.americanheritage.com/content/patriots-or-terrorists |archivedate=March 23, 2013 |date=Fall 2008 |series=58 |issue=5 |url-status=live |df=mdy }}</ref><br /></small>
+
+'''France:'''<br />
+<small>at least 7,000 dead<br />
+(2,112 in the United States)<ref name="frenchcasualtiesrevolution">{{cite web|last1=Dawson|first1=Warrington|title=The 2112 Frenchmen who died in the United States from 1777 to 1783 while fighting for the American Independence|url=http://www.w3r-us.org/history/rosters/frgraves.htm|website=Washington-Rochambeau Revolutionary Route|publisher=Journal de la societe des Americanistes|accessdate=4 June 2017|url-status=dead|archiveurl=https://web.archive.org/web/20170605125852/http://www.w3r-us.org/history/rosters/frgraves.htm|archivedate=June 5, 2017|df=mdy-all}}</ref><br />19 ships of the line (1,346 guns) lost<ref name=Clodfelter/><br>30 frigates (988 guns) lost<ref name=Clodfelter/></small>
+
+'''Spain:'''<br /><small>5,000 dead<ref name="Necrometrics">{{cite web|url= http://necrometrics.com/wars18c.htm#AmRev |title= Spanish casualties in The American Revolutionary war |publisher= Necrometrics}}</ref><br>(124 in British West Florida)<ref>{{cite book |last1=Otfinoski |first1=Steven |title=The New Republic |date=2008 |publisher=Marshall Cavendish |isbn=9780761429388}}</ref><br>8 ships of the line (572 guns) lost<ref name=Clodfelter/><br>11 frigates (326 guns) lost<ref name=Clodfelter/>
+
+'''Netherlands:'''<br />
+<small>500 killed<ref name="Necrometrics" /></small>
+----
+'''Total:''' 37,000–82,500+ soldiers dead
+|casualties2='''Great Britain:'''<br />
+<small>'''Army:'''<br />
+43,633 total dead<ref name="Annual Register, 1783">[https://books.google.com/books?id=p7T9O3aNmVoC&pg=PA199&dq=Annual+register+43,633#v=onepage&q=Annual%20register%2043%2C633 Annual Register, 1783] (1785), pp. 199–200.</ref><br />
+~9,372 killed in battle<ref name="books.google.com">[https://books.google.com/books?id=zc5ZwyqzpQQC&pg=PA298&dq=parliamentary+register+1780#v=onepage Parliamentary Register] (1781), pp. 263–65.</ref><br />
+27,000 died of disease<ref name=medical /><ref>{{cite web|url= http://necrometrics.com/wars18c.htm|title= Eighteenth Century Death Tolls|author= |date= |website= necrometrics.com|accessdate= January 7, 2016}}</ref><br />
+'''Navy:'''<br />
+1,243 killed in battle<br />
+18,500 died of disease (1776–1780)<ref name="Parliamentary Register">[https://books.google.com/books?id=zc5ZwyqzpQQC&pg=PA298&dq=parliamentary+register+1780#v=onepage&q=killed Parliamentary Register] (1781), p. 269.</ref><br />
+42,000 deserted<ref name="Mackesy pp. 6, 176">Mackesy (1964), pp. 6, 176 (British seamen)</ref><br />20 ships of the line (1,396 guns) lost<ref name=Clodfelter>{{cite book|last1=Clodfelter|first1=Micheal|title=Warfare and Armed Conflicts: A Statistical Encyclopedia of Casualty and Other Figures, 1492–2015, 4th ed|date=2017|publisher=McFarland|isbn=978-0786474707|page=133}}</ref><br>70 frigates (1,978 guns) lost<ref name=Clodfelter/><br>2,200 merchant ships (600 to American privateers) lost<ref name=Clodfelter/><br>75 privateering ships lost<ref name=Clodfelter/></small>
+
+'''Germans:'''<br />
+<small>7,774 total dead<br />
+1,800 killed in battle<br />
+4,888 deserted<ref name=medical /></small>
+
+'''Loyalists:'''<br />
+<small>7,000 total dead<br />
+1,700 killed in battle<br />
+5,300 died of disease (estimated)<ref>Burrows, Edwin. "Forgotten Patriots: The Untold Story of American Prisoners During the Revolutionary War." Basic Books. New York, 2008. p. 203.</ref></small>
+----
+'''Total:''' 78,200+ soldiers dead
+| campaignbox =
+{{Campaignbox American Revolutionary War}}
+}}
