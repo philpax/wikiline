@@ -11,7 +11,7 @@ class WikitextParser < Parslet::Parser
   rule(:italic_surround) { str("''") }
   rule(:special_text) { bold_surround | italic_surround }
 
-  rule(:key) { match['[:alnum:]_'].repeat(1) }
+  rule(:key) { match['[:alnum:]_ '].repeat(1) }
   rule(:text) { (special_text.absent? >> match['[:alnum:] ü/\.\(\),;:&\-–_\?\*\'"%#†\+\~ ']).repeat(1) }
 
   rule(:link) {
@@ -195,7 +195,10 @@ def text_print(tree)
       page
     }
     rule(key: simple(:key), values: sequence(:values)) {
-      "#{key}=#{values.join(' ')}"
+      "#{key.to_s.strip}=#{values.join(' ')}"
+    }
+    rule(key: simple(:key)) {
+      "#{key.to_s.strip}="
     }
     rule(values: sequence(:values)) {
       values.join(' ')
@@ -207,9 +210,11 @@ def text_print(tree)
       next if ["flagdeco", "flagicon", "flagicon image", "refn", "sfn"].include?(name)
       next arguments.first.to_s if arguments.length == 1 && ["nowrap", "small"].include?(name)
 
+      is_infobox = name.to_s.downcase.start_with?("infobox ")
       s = "{{#{name}"
-      separator = name.to_s.downcase.start_with?("infobox ") ? "\n|" : "|"
+      separator = is_infobox ? "\n|" : "|"
       s += separator + arguments.join(separator) unless arguments.empty?
+      s += "\n" if is_infobox
       s += "}}"
       s
     }
