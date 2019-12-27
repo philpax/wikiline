@@ -121,7 +121,7 @@ DOC
   it 'can parse a small tag in context' do
     parser = WikitextParser.new
     expect(parser).to parse '<small>lol</small>'
-    expect(parser.parse('<small>lol</small>')).to eq({:xml => [{"tag"=>"small"}, {:text=>"lol"}, {"tag"=>"small"}]})
+    expect(parser.parse('<small>lol</small>')).to eq({:xml => {l: {"tag"=>"small"}, v: [{:text=>"lol"}], r: {"tag"=>"small"}}})
     expect(parser).to parse '{{template|arg=<small>lol</small>}}'
     expect(parser).to parse '{{template|strength2=<small><br /></small>}}'
     expect(parser).to parse '{{template|strength2=<br /><small>lol</small>}}'
@@ -137,5 +137,10 @@ DOC
 </small>
 }}
 DOC
+  end
+
+  it 'can parse a bold inside a link' do
+    parser = WikitextParser.new
+    expect(parser).to parse "[[test|'''lol''']]"
   end
 end

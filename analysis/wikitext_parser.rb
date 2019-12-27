@@ -7,13 +7,17 @@ class WikitextParser < Parslet::Parser
 
   rule(:comma) { spaces? >> str(',') >> spaces? }
 
+  rule(:bold_surround) { str("'''") }
+  rule(:italic_surround) { str("''") }
+  rule(:special_text) { bold_surround | italic_surround }
+
   rule(:key) { match['[:alnum:]_'].repeat(1) }
-  rule(:text) { match['[:alnum:] ü/\.\(\),;:&\-–_\?\*\'"%#†\+\~ '].repeat(1) }
+  rule(:text) { (special_text.absent? >> match['[:alnum:] ü/\.\(\),;:&\-–_\?\*\'"%#†\+\~ ']).repeat(1) }
 
   rule(:link) {
     str('[[') >> spaces? >>
       text.as(:page) >>
-      (str('|') >> text.as(:alias)).maybe >>
+      (str('|') >> value.as(:alias)).maybe >>
     spaces? >> str(']]')
   }
 
@@ -52,8 +56,8 @@ class WikitextParser < Parslet::Parser
 
   # Courtesy of the XML example
   rule(:xml_tag) {
-    tag(close: false) >> (spaces? >> value >> spaces?).repeat(1) >> tag(close: true) |
-    tag(close_end: true)
+    tag(close: false).as(:l) >> (spaces? >> value >> spaces?).repeat(1).as(:v) >> tag(close: true).as(:r) |
+    tag(close_end: true).as(:l)
   }
 
   def tag(opts={})
@@ -75,6 +79,11 @@ class WikitextParser < Parslet::Parser
   def surround_with(start_tag, end_tag = nil)
     end_tag = start_tag if end_tag.nil?
     str(start_tag) >> (str(end_tag).absent? >> any).repeat.as('contents') >> str(end_tag)
+  end
+
+  def surround_value_with(start_tag, end_tag = nil)
+    end_tag = start_tag if end_tag.nil?
+    start_tag >> value.repeat.as('contents') >> end_tag
   end
 
   def xml_self_closing(tag, attributes = false)
@@ -105,18 +114,18 @@ class WikitextParser < Parslet::Parser
   }
 
   rule(:bold) {
-    surround_with("'''")
+    surround_value_with(bold_surround)
   }
 
   rule(:italics) {
-    surround_with("''")
+    surround_value_with(italic_surround)
   }
 
   rule(:value) {
     comment.as(:comment) |
     ref.as(:ref) |
-    hr.as(:hr) |
-    br.as(:br) |
+    hr |
+    br |
     xml_tag.as(:xml) |
     macro.as(:macro) |
     image.as(:image) |
