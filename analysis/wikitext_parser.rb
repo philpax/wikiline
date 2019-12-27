@@ -139,3 +139,86 @@ class WikitextParser < Parslet::Parser
   rule(:top) { spaces? >> value >> spaces? }
   root(:top)
 end
+
+def pretty_print(tree)
+  t = Parslet::Transform.new do
+    rule(comment: subtree(:t)) { nil }
+    rule(image: subtree(:t)) { nil }
+    rule(ref: subtree(:t)) { nil }
+    rule(text: simple(:text)) { text.to_s }
+    rule(italics: {"contents" => simple(:text)}) { "''#{text.to_s}''" }
+    rule(bold: {"contents" => simple(:text)}) { "'''#{text.to_s}'''" }
+    rule(link: {page: simple(:page), alias: simple(:alias_name)}) {
+      "[[#{page}|#{alias_name}]]"
+    }
+    rule(link: {page: simple(:page)}) {
+      "[[#{page}]]"
+    }
+    rule(key: simple(:key), values: sequence(:values)) {
+      "#{key}=#{values.join(' ')}"
+    }
+    rule(values: sequence(:values)) {
+      values.join(' ')
+    }
+    rule(macro: {
+           name: simple(:name),
+           arguments: sequence(:arguments)
+         }) {
+      s = "{{#{name}"
+      separator = name.to_s.downcase.start_with?("infobox ") ? "\n|" : "|"
+      s += separator + arguments.join(separator) unless arguments.empty?
+      s += "}}"
+      s
+    }
+    rule(xml: {
+           l: {"tag" => simple(:tag)},
+           r: {"tag" => simple(:tag)},
+           v: sequence(:v)
+         }) { "<#{tag}>#{v.reject { |a| a.nil? }.join(' ')}</#{tag}>" }
+  end
+
+  t.apply(tree)
+end
+
+def text_print(tree)
+  t = Parslet::Transform.new do
+    rule(comment: subtree(:t)) { nil }
+    rule(image: subtree(:t)) { nil }
+    rule(ref: subtree(:t)) { nil }
+    rule(text: simple(:text)) { text.to_s }
+    rule(italics: {"contents" => sequence(:values)}) { values.join(" ") }
+    rule(bold: {"contents" => sequence(:values)}) { values.join(" ") }
+    rule(link: {page: simple(:page), alias: simple(:alias_name)}) {
+      alias_name
+    }
+    rule(link: {page: simple(:page)}) {
+      page
+    }
+    rule(key: simple(:key), values: sequence(:values)) {
+      "#{key}=#{values.join(' ')}"
+    }
+    rule(values: sequence(:values)) {
+      values.join(' ')
+    }
+    rule(macro: {
+           name: simple(:name),
+           arguments: sequence(:arguments)
+         }) {
+      next if ["flagdeco", "flagicon", "flagicon image", "refn", "sfn"].include?(name)
+      next arguments.first.to_s if arguments.length == 1 && ["nowrap", "small"].include?(name)
+
+      s = "{{#{name}"
+      separator = name.to_s.downcase.start_with?("infobox ") ? "\n|" : "|"
+      s += separator + arguments.join(separator) unless arguments.empty?
+      s += "}}"
+      s
+    }
+    rule(xml: {
+           l: {"tag" => simple(:tag)},
+           r: {"tag" => simple(:tag)},
+           v: sequence(:v)
+         }) { v.join(" ") }
+  end
+
+  t.apply(tree)
+end
