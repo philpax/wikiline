@@ -9,15 +9,29 @@ class WikitextParser < Parslet::Parser
 
   rule(:bold_surround) { str("'''") }
   rule(:italic_surround) { str("''") }
-  rule(:special_text) { bold_surround | italic_surround }
+  rule(:special_text) {
+    bold_surround |
+    italic_surround |
+    str('[[') |
+    str(']]') |
+    str('{{') |
+    str('}}') |
+    str('[') |
+    str(']') |
+    str("\r") |
+    str("\n") |
+    str('|') |
+    str('<') |
+    str('>')
+  }
 
   rule(:key) { match['[:alnum:]_ '].repeat(1) }
-  rule(:text) { (special_text.absent? >> match['[:alnum:] ü/\.\(\),;:&\-–_\?\*\'"%#†\+\~ ']).repeat(1) }
+  rule(:text) { (special_text.absent? >> any).repeat(1) }
 
   rule(:link) {
     str('[[') >> spaces? >>
       text.as(:page) >>
-      (str('|') >> value.as(:alias)).maybe >>
+      (str('|') >> (value.repeat(1)).as(:alias)).maybe >>
     spaces? >> str(']]')
   }
 
@@ -148,8 +162,8 @@ def pretty_print(tree)
     rule(text: simple(:text)) { text.to_s }
     rule(italics: {"contents" => simple(:text)}) { "''#{text.to_s}''" }
     rule(bold: {"contents" => simple(:text)}) { "'''#{text.to_s}'''" }
-    rule(link: {page: simple(:page), alias: simple(:alias_name)}) {
-      "[[#{page}|#{alias_name}]]"
+    rule(link: {page: simple(:page), alias: sequence(:aliases)}) {
+      "[[#{page}|#{aliases.join('')}]]"
     }
     rule(link: {page: simple(:page)}) {
       "[[#{page}]]"
@@ -186,22 +200,22 @@ def text_print(tree)
     rule(image: subtree(:t)) { nil }
     rule(ref: subtree(:t)) { nil }
     rule(text: simple(:text)) { text.to_s }
-    rule(italics: {"contents" => sequence(:values)}) { values.join(" ") }
-    rule(bold: {"contents" => sequence(:values)}) { values.join(" ") }
-    rule(link: {page: simple(:page), alias: simple(:alias_name)}) {
-      alias_name
+    rule(italics: {"contents" => sequence(:values)}) { values.join(" ").strip }
+    rule(bold: {"contents" => sequence(:values)}) { values.join(" ").strip }
+    rule(link: {page: simple(:page), alias: sequence(:aliases)}) {
+      aliases.join('').strip
     }
     rule(link: {page: simple(:page)}) {
       page
     }
     rule(key: simple(:key), values: sequence(:values)) {
-      "#{key.to_s.strip}=#{values.join(' ')}"
+      "#{key.to_s.strip}=#{values.join(' ').strip}"
     }
     rule(key: simple(:key)) {
       "#{key.to_s.strip}="
     }
     rule(values: sequence(:values)) {
-      values.join(' ')
+      values.join(' ').strip
     }
     rule(macro: {
            name: simple(:name),
@@ -211,13 +225,18 @@ def text_print(tree)
       next arguments.first.to_s if arguments.length == 1 && ["nowrap", "small"].include?(name)
 
       is_infobox = name.to_s.downcase.start_with?("infobox ")
-      s = "{{#{name}"
+      s = "{{#{name.to_s.strip}"
       separator = is_infobox ? "\n|" : "|"
       s += separator + arguments.join(separator) unless arguments.empty?
       s += "\n" if is_infobox
       s += "}}"
       s
     }
+    rule(xml: {
+           l: {"tag" => simple(:tag)},
+           r: {"tag" => simple(:tag)},
+           v: simple(:v)
+         }) { v }
     rule(xml: {
            l: {"tag" => simple(:tag)},
            r: {"tag" => simple(:tag)},
