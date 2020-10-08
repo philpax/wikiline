@@ -147,11 +147,11 @@ fn duration_secs(duration: &std::time::Duration) -> f64 {
 }
 
 fn main() -> std::io::Result<()> {
-    const PATH: &'static str = "../data/enwiki-20191220-pages-articles-multistream.xml.bz2";
+    const PATH: &'static str = "../data/enwiki-20200901-pages-articles-multistream.xml.bz2";
     const INDEX_PATH: &'static str = "../data/index.txt";
     const SUPPORTED_INFOBOXES_PATH: &'static str = "../common/supported-infoboxes.txt";
     const BLACKLISTED_PREFIXES_PATH: &'static str = "../common/blacklisted-prefixes.txt";
-    const OUTPUT_PATH: &'static str = "../data/raw-events.json";
+    const OUTPUT_PATH: &'static str = "../data/raw-events.ndjson";
 
     // Start timing.
     let total_now = Instant::now();
@@ -223,12 +223,15 @@ fn main() -> std::io::Result<()> {
     // Write articles to JSON.
     let now = Instant::now();
     println!("dump: writing to json");
-    let json = serde_json::to_string(&articles)
-        .map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e))?;
 
     let output_file = File::create(OUTPUT_PATH)?;
     let mut output_file = BufWriter::new(output_file);
-    output_file.write_all(json.as_bytes())?;
+    for article in articles {
+        let json = serde_json::to_string(&article)
+            .map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e))?;
+        output_file.write_all(json.as_bytes())?;
+        output_file.write_all(b"\n")?;
+    }
     println!("dump: wrote to json, {}s", duration_secs(&now.elapsed()));
 
     println!("dump: end, {}s", duration_secs(&total_now.elapsed()));
