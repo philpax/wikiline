@@ -2,6 +2,7 @@ require 'json'
 require 'date'
 require 'parallel'
 require './common/supported_infoboxes'
+require './analysis/wikitext_parser'
 
 def find_template_bounds(text, start_index)
   length = 2
@@ -90,7 +91,16 @@ def segment(entry)
   }
 end
 
-def extract_infobox(infobox)
+def extract_infobox(original_infobox)
+  parser = WikitextParser.new
+  tree = parser.parse(original_infobox)
+  infobox = text_print(tree)
+  unless infobox.is_a? String
+    puts original_infobox
+    puts infobox
+    raise Exception, 'failed to condense infobox to string'
+  end
+
   # Retrieve the constituent lines of the infobox.
   lines = infobox.split("\n").map(&:strip)
   # Get the type of the infobox.
@@ -98,26 +108,6 @@ def extract_infobox(infobox)
 
   # Exclude the infobox starting and ending tags.
   lines = lines[1..-2]
-
-  # Merge together non-argument lines into the preceding lines.
-  (lines.length-1).downto(0).each { |index|
-    line = lines[index]
-    if line.start_with? "|"
-      lines[index] = lines[index][1..-1].strip
-    else
-      lines.delete_at(index)
-      lines[index-1] += "\n" + line unless lines[index-1].nil?
-    end
-  }
-
-  # Do another merge pass that joins anything without an equals sign.
-  (lines.length-1).downto(0).each { |index|
-    line = lines[index]
-    unless line.include? "="
-      lines.delete_at(index)
-      lines[index-1] += "\n" + line
-    end
-  }
 
   # Generate our KV map.
   kv = Hash[lines.map { |line|
