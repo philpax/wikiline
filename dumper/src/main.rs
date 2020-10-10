@@ -11,9 +11,9 @@ use bzip2::bufread::BzDecoder;
 
 use rayon::prelude::*;
 
-use serde::{Deserialize, Serialize};
+use roxmltree;
 
-use htmlescape::decode_html;
+use serde::{Deserialize, Serialize};
 
 fn get_stream_offsets(path: &str) -> std::io::Result<Vec<usize>> {
     let new_path = str::replace(path, "multistream.xml.bz2", "multistream-index.txt.bz2");
@@ -26,14 +26,15 @@ fn get_stream_offsets(path: &str) -> std::io::Result<Vec<usize>> {
 
     let mut result = vec![];
     for line in file_reader.lines() {
-        let number = line
-            .unwrap()
+        let number = line?
             .split(":")
             .next()
-            .unwrap()
+            .ok_or(std::io::Error::new(
+                std::io::ErrorKind::Other,
+                "failed to get next line",
+            ))?
             .parse::<usize>()
-            .map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e))
-            .unwrap();
+            .map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e))?;
 
         if result.len() == 0 || *(result.last().unwrap()) != number {
             result.push(number);
@@ -49,27 +50,22 @@ struct Article {
     text: String,
 }
 
-// XML parsing is slow so let's just use string processing to get the contents of tags
-fn get_contents_of_tag<'a>(data: &'a str, tag: &str) -> Option<(String, usize)> {
-    let mut contents = &data[..];
+fn get_text_of_child_tag(tag: &roxmltree::Node, tag_name: &str) -> Option<String> {
+    Some(
+        tag.children()
+            .find(|n| n.tag_name().name() == tag_name)?
+            .text()?
+            .to_string(),
+    )
+}
 
-    let start_tag = "<".to_owned() + tag;
-    let end_tag = "</".to_owned() + tag;
-
-    let mut start_index = contents.find(&start_tag)?;
-    let orig_start_index = start_index;
-
-    contents = &contents[start_index..];
-    start_index = contents.find(">").unwrap() + 1;
-
-    let end_index = contents.find(&end_tag)?;
-
-    contents = &contents[start_index..end_index];
-
-    // Time for some janky-ass XML unescaping
-    // let unescaped_contents = decode_html(contents).ok()?;
-    let unescaped_contents = contents.to_owned();
-    Some((unescaped_contents, orig_start_index + end_index))
+macro_rules! skip_fail {
+    ($res:expr) => {
+        match $res {
+            Some(val) => val,
+            None => continue,
+        }
+    };
 }
 
 fn get_articles_from_chunk(
@@ -86,54 +82,25 @@ fn get_articles_from_chunk(
     let mut data = String::new();
     reader.read_to_string(&mut data)?;
 
-    let mut data_view = &data[..];
+    let rooted_xml = format!("<root>{}</root>", &data);
 
-    loop {
-        match get_contents_of_tag(&data_view, "page") {
-            Some((page, end_index)) => {
-                let (title, _) = match get_contents_of_tag(&page, "title") {
-                    Some(v) => v,
-                    None => {
-                        println!("dump: warning! couldn't find title");
-                        break;
-                    }
-                };
+    let doc = roxmltree::Document::parse(&rooted_xml).unwrap();
 
-                let mut blacklisted = false;
-                for prefix in blacklisted_prefixes.iter() {
-                    if title.starts_with(prefix) {
-                        blacklisted = true;
-                        break;
-                    }
-                }
+    for t in doc.descendants().filter(|t| t.tag_name().name() == "page") {
+        let title = skip_fail!(get_text_of_child_tag(&t, "title"));
+        if blacklisted_prefixes.iter().any(|p| title.starts_with(p)) {
+            continue;
+        }
 
-                if !blacklisted {
-                    let (text, _) = match get_contents_of_tag(&page, "text") {
-                        Some(v) => v,
-                        None => {
-                            println!("dump: warning! couldn't find text for {}", title);
-                            break;
-                        }
-                    };
+        let revision = skip_fail!(t.children().find(|n| n.tag_name().name() == "revision"));
+        let text = skip_fail!(get_text_of_child_tag(&revision, "text"));
 
-                    let lowercase_text: String = text.to_lowercase();
-                    let contained: bool = infoboxes.iter().any(|i| lowercase_text.contains(i));
-                    if contained {
-                        result.push(Article {
-                            title: decode_html(title.trim()).unwrap(),
-                            text: decode_html(text.trim()).unwrap(),
-                        });
-                    }
-                }
-
-                data_view = &data_view[end_index..];
-            }
-            None => {
-                break;
-            }
+        let lowercase_text: String = text.to_lowercase();
+        let contained: bool = infoboxes.iter().any(|i| lowercase_text.contains(i));
+        if contained {
+            result.push(Article { title, text });
         }
     }
-
     let counter_value = counter.fetch_add(1, Ordering::SeqCst);
     if (counter_value % 1000) == 0 {
         println!("dump: {} offsets completed", counter_value);
